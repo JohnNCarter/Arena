@@ -7,7 +7,6 @@
 #include <string.h>
 #include <math.h>
 
-//~ #include "World.h"
 
 FILE *flog;
 
@@ -58,14 +57,10 @@ void vbo_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
 
     C->glVertex3f(vertices[a][0], vertices[a][1], vertices[a][2]);
     C->glVertex3f(vertices[b][0], vertices[b][1], vertices[b][2]);
-//    C->glVertex3fv(vertices[a]);
-//    C->glVertex3fv(vertices[b]);
     C->glVertex3fv(vertices[c]);
-//    C->glVertex3fv(vertices[a]);
     C->glVertex3fv(vertices[c]);
     C->glVertex3fv(vertices[d]);
     C->glVertex3fv(vertices[a]);
-//    C->glVertex3fv(vertices[c]);
     }
 
 VertexBufferObject makeWireCubeMesh(void) {

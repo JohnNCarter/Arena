@@ -146,42 +146,44 @@ int main(void) {
     float raxis[3] = {1., .5, -.7};
     SetQuaternionFromAxisAngle(axis, 0., quat);
     app.StartUp("The Arena.");
+
     // Setup Drawing
-    //
+
     VertexBufferObject Tetrahedron = makeWireTetrahedronMesh();
     VertexBufferObject Axis = makeWireAxisMesh(100.);
     VertexBufferObject Disk = makeWireDiskMesh(5.);
     VertexBufferObject Cube = makeWireCubeMesh();
     printf("VBO Cube number = %d\n", Cube.numVertices);
-//    app.things2draw.push_back(Tetrahedron);
-//    app.things2draw.push_back(Axis);
-//    app.things2draw.push_back(Disk);
-//    app.things2draw.push_back(Cube);
     GLSLProgram OO = app.SetShaders("vbo.vert", "vbo.frag");
-//    GLSLProgram OO2 = app.SetShaders("vbo.vert", "vbo2.frag");
-//    app.SetShaders(Tetrahedron);
-//    app.SetShaders(Axis);
-//    app.SetShaders(Disk);
-//    app.SetShaders(Cube);
+    GLSLProgram OO2 = app.SetShaders("vbo.vert", "vbo2.frag");
     app.SetBackgroundColour(0.5, 0.5, 0.5, 1.);
+
     // Setup UI
-    //
+
     TweakBar::AntTweakBar bar;
     bar.Start("C", app.width, app.height);
-    bar.Define(" GLOBAL help='This is a AntTweakBar program. Remember that TwDraw must come after the clear but before the swap buffers.' "); // Message added to the help bar.
+
     bar.AddVarRW("W", TW_TYPE_BOOL32, &wire, "label='Wireframe' key=w help='Toggle wireframe display mode.' "); // wireframe
     bar.AddVarRW("Z", TW_TYPE_BOOL32, &depth, "label='Z-Buffer' key=z help='Toggle z-buffer mode display mode.' "); // z-buffer
     bar.AddVarRW("OV", TW_TYPE_BOOL32, &overhead, "label='Overhead|Tank'  help='Go to overhead view.' "); // manual rotate flag
-    bar.AddVarRW("CX", TW_TYPE_FLOAT, &CameraX, "label='Camera X'  help='Move Camera X.' "); // manual X
-    bar.AddVarRW("FOV", TW_TYPE_FLOAT, &fov, "label='Field of View'  help='Control Field of view' "); // manual FOV
     bar.AddVarRW("AR", TW_TYPE_BOOL32, &autorotate, "label='Auto Rotate' key=r help='This applies continual rotation.' "); // auto rotate
+    bar.AddVarRW("CX", TW_TYPE_FLOAT, &CameraX, "label='Camera X'  help='Move Camera X.' "); // manual X
+
+    bar.AddVarRW("FOV", TW_TYPE_FLOAT, &fov, "label='Field of View'  help='Control Field of view' "); // manual FOV
+
     bar.AddVarRW("NB", TW_TYPE_INT32, &nbox, "label='Number of boxes' key=r help='This controls the number of boxes drawn.' "); // auto rotate
+
     bar.AddVarRW("RS", TW_TYPE_QUAT4F, &quat, "label='Rotate Shape'  help='Rotate this to spin object.' "); // manual rotate cpntrol
+
     bar.Space();
+
     bar.AddVarRW("Quit", TW_TYPE_BOOL32, &quit_app, "label='Quit' key=q help='Forces the program to quit.' "); // Quit
+
     bar.Define("C/CX min = 1. max = 10. step = 0.1");
     bar.Define("C/FOV min = 1. max = 60. step = 0.5");
     bar.Define("C/NB min =2 max = 16 step = 1");
+
+    bar.Define(" GLOBAL help='This is a AntTweakBar program. Remember that TwDraw must come after the clear but before the swap buffers.' "); // Message added to the help bar.
 
     glEnable(GL_DEPTH_TEST);
     float aspect = 1./(float(app.height)/float(app.width));
@@ -210,7 +212,6 @@ int main(void) {
         ConvertQuaternionToMatrix(quat, glm::value_ptr(rotation)); //glm::value_ptr used to get pointer to underlying matrix data.
         glm::mat4 Projection = glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
         glm::mat4 Projection45 = glm::perspective(glm::radians(45.f), aspect, 0.1f, 100.0f);
-//        glm::mat4  = glm::mat4(1.0);
         glm::mat4 TetraPosition = glm::translate(glm::mat4(1.), glm::vec3(0.f, 0.f, 0.0f));
         glm::mat4 CamPosition, MVP;
         if(overhead) {
