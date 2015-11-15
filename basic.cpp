@@ -145,7 +145,7 @@ int main(void) {
     float axis[3] = {1., 0., 0.};
     float raxis[3] = {1., .5, -.7};
     SetQuaternionFromAxisAngle(axis, 0., quat);
-    app.StartUp("The Arena.");
+    app.StartUp("The Arena - lights.");
 
     // Setup Drawing
 
