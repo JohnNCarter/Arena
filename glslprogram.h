@@ -91,16 +91,16 @@ class GLSLProgram {
                 fix to stop programs hanging jnc 19/8/2015
 
             */
-            fprintf(stderr, "Disabled because OpenGL 4 does not have all these symbols and check hangs\n");
-            fprintf( stderr, "Can do: " );
-            if( CanDoComputeShaders )		fprintf( stderr, "compute shaders, " );
-            if( CanDoVertexShaders )		fprintf( stderr, "vertex shaders, " );
-            if( CanDoTessControlShaders )		fprintf( stderr, "tess control shaders, " );
-            if( CanDoTessEvaluationShaders )	fprintf( stderr, "tess evaluation shaders, " );
-            if( CanDoGeometryShaders )		fprintf( stderr, "geometry shaders, " );
-            if( CanDoFragmentShaders )		fprintf( stderr, "fragment shaders, " );
-            if( CanDoBinaryFiles )			fprintf( stderr, "binary shader files " );
-            fprintf( stderr, "\n" );
+//            fprintf(stderr, "Disabled because OpenGL 4 does not have all these symbols and check hangs\n");
+//            fprintf( stderr, "Can do: " );
+//            if( CanDoComputeShaders )		fprintf( stderr, "compute shaders, " );
+//            if( CanDoVertexShaders )		fprintf( stderr, "vertex shaders, " );
+//            if( CanDoTessControlShaders )		fprintf( stderr, "tess control shaders, " );
+//            if( CanDoTessEvaluationShaders )	fprintf( stderr, "tess evaluation shaders, " );
+//            if( CanDoGeometryShaders )		fprintf( stderr, "geometry shaders, " );
+//            if( CanDoFragmentShaders )		fprintf( stderr, "fragment shaders, " );
+//            if( CanDoBinaryFiles )			fprintf( stderr, "binary shader files " );
+//            fprintf( stderr, "\n" );
             }
         ~GLSLProgram( void) {
             Verbose = true;

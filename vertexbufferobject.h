@@ -70,7 +70,6 @@ typedef std::map< Key, int >	PMap;
 
 class VertexBufferObject {
     private:
-        bool				hasVertices, hasNormals, hasColors, hasTexCoords;
         volatile float				c_r, c_g, c_b;
         volatile float				c_nx, c_ny, c_nz;
         volatile float				c_s, c_t;
@@ -103,6 +102,8 @@ class VertexBufferObject {
         void Fillin();
 
     public:
+        bool hasVertices, hasNormals, hasColors, hasTexCoords;
+        GLuint Va, Ca, Na, Ta;
         GLuint numVertices;
         std::map<int, int> vertexAtributesMap;
         const char *vboName;

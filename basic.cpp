@@ -100,9 +100,11 @@ class MyApp: public TinyG::TinyG {
 
             OO.Use();
             OO.SetAttribute( "aPosition", VB.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
-            OO.SetAttribute( "aColor", VB.vertexAtributesMap[COLOR_ATTRIBUTE ] );
+            if(VB.hasColors)
+                OO.SetAttribute( "aColor", VB.vertexAtributesMap[COLOR_ATTRIBUTE ] );
+            if(VB.hasNormals)
+                OO.SetAttribute( "aNormal", VB.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
             OO.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
-
             VB.Draw();
             OO.Use(0);
             VB.DeSelectVAO();
@@ -151,11 +153,12 @@ int main(void) {
 
     VertexBufferObject Tetrahedron = makeWireTetrahedronMesh();
     VertexBufferObject Axis = makeWireAxisMesh(100.);
-    VertexBufferObject Disk = makeWireDiskMesh(5.);
+    VertexBufferObject Disk = makeSolidDiskMesh(5.);
     VertexBufferObject Cube = makeWireCubeMesh();
-    printf("VBO Cube number = %d\n", Cube.numVertices);
+//    printf("VBO Cube number = %d\n", Cube.numVertices);
     GLSLProgram OO = app.SetShaders("vbo.vert", "vbo.frag");
     GLSLProgram OO2 = app.SetShaders("vbo.vert", "vbo2.frag");
+    GLSLProgram LL1 = app.SetShaders("light1.vert", "light1.frag");
     app.SetBackgroundColour(0.5, 0.5, 0.5, 1.);
 
     // Setup UI
@@ -188,7 +191,9 @@ int main(void) {
     glEnable(GL_DEPTH_TEST);
     float aspect = 1./(float(app.height)/float(app.width));
     printf("Aspect Ratio = %f\n", aspect);
-
+    glm::vec4 ambientLight = glm::vec4(.1, .1, .1, 1.);
+    glm::vec4 diffuseLight = glm::vec4(.0, .8, .0, 1.);
+    glm::vec3 lightVector = glm::vec3(glm::normalize(glm::vec3(-5., 0., 25.0)));
     while(!app.Stop()) {
         int object, shader;
         if(quit_app)
@@ -225,7 +230,23 @@ int main(void) {
         app.Render(Tetrahedron, OO, MVP);
         MVP = Projection45 * CamPosition;
         app.Render(Axis, OO, MVP);
-        app.Render(Disk, OO, MVP);
+
+            Disk.SelectVAO();
+
+            LL1.Use();
+            LL1.SetAttribute( "aPosition", Disk.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
+            if(Disk.hasColors)
+                LL1.SetAttribute( "aColor", Disk.vertexAtributesMap[COLOR_ATTRIBUTE ] );
+            if(Disk.hasNormals)
+                LL1.SetAttribute( "aNormal", Disk.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
+            LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
+            LL1.SetUniform("uAmbient", ambientLight);
+            LL1.SetUniform("uDiffuse", diffuseLight);
+            LL1.SetUniform("uLightVector", lightVector);
+            Disk.Draw();
+            LL1.Use(0);
+            Disk.DeSelectVAO();
+            glFlush();
 
         float fnbox = (float) nbox;
         float sbox = 2.5 * 16. / (fnbox - 1.);
@@ -241,6 +262,7 @@ int main(void) {
             }
         bar.Draw();
         app.SwapBuffers();// Swap front and back rendering buffers
+//        break;
         }
     printf("Bye-Bye\n");
     }

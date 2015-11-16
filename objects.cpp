@@ -162,6 +162,51 @@ VertexBufferObject makeWireDiskMesh(float radius) {
     Disk.makeObj("Disk.obj");
     return Disk;
     }
+//VertexBufferObject makeWireDiskMesh(float radius) {
+//    VertexBufferObject Disk;
+//    Disk.vboName = "Disk";
+//    Disk.SetVerbose(true);
+//    Disk.CollapseCommonVertices( false );
+//    Disk.SetTol( .001f );// how close need to be to collapse vertices, ignored at the moment.
+//    Disk.UseBufferObjects(true); // Not needed as this is the only option.
+//    float theta;
+//    const float Radius = radius;
+//    Disk.glBegin( GL_TRIANGLE_FAN );
+//    Disk.glColor3f(1.0, 1., 0.);
+//    glm::vec3 p, n;
+//    Disk.glVertex3f(0., 0., 0.); //Start point
+//    Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.); // First Point
+//    for(theta = lod; theta < PI2; theta += lod) {
+//        Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.);
+//        }
+//    Disk.glEnd();
+//    Disk.Print();
+//    Disk.makeObj("Disk.obj");
+//    return Disk;
+//    }
+VertexBufferObject makeSolidDiskMesh(float radius) {
+    VertexBufferObject Disk;
+    Disk.vboName = "Disk";
+    Disk.SetVerbose(true);
+    Disk.CollapseCommonVertices( false );
+    Disk.SetTol( .001f );// how close need to be to collapse vertices, ignored at the moment.
+    Disk.UseBufferObjects(true); // Not needed as this is the only option.
+    float theta;
+    const float Radius = radius;
+    Disk.glBegin( GL_TRIANGLE_FAN );
+//    Disk.glColor3f(1.0, 1., 0.);
+//    Disk.glNormal3fv(glm::normalize(glm::vec3(1.0, 0., 1.)));
+    glm::vec3 p, n;
+    Disk.glVertex3f(0., 0., 0.); //Start point
+    Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.); // First Point
+    for(theta = lod; theta < PI2; theta += lod) {
+        Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.);
+        }
+    Disk.glEnd();
+    Disk.Print();
+    Disk.makeObj("Disk.obj");
+    return Disk;
+    }
 
 VertexBufferObject makeWireAxisMesh(float Length) {
     VertexBufferObject Axis;

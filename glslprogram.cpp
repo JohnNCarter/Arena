@@ -221,6 +221,7 @@ GLSLProgram::CreateHelper( const char *file0, ... ) {
             }
 
         strings[n] = buf;
+        printf("\nShader Source\n****\n%s\n****\n", strings[n]);
         n++;
 
         // Tell GL about the source:
@@ -361,7 +362,7 @@ GLSLProgram::Use( GLuint p ) {
 
 
 void
-GLSLProgram::UseFixedFunction( ) {
+GLSLProgram::UseFixedFunction( ) { // display nothing in core mode
     this->Use( 0 );
     };
 
