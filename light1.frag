@@ -12,10 +12,12 @@ in  vec3 vEx_Normal;
 out vec4 fFragColor;
 
 void main(void) {
+    vec4 t;
     float cos_angle = dot(vEx_Normal, uLightVector);
-//    cos_angle = .5;
-    if(cos_angle < 0.)
-        cos_angle *= -1.0;
-    vec4 t = uAmbientLight + uDiffuseLight;
-    fFragColor = t; //vec4(t,1.0);
+    cos_angle = clamp(cos_angle, 0.0, 1.0);
+    t = vec4(vEx_Normal, 1.);
+    t = vec4(cos_angle, 0., 0., 1.);
+    t = uAmbientLight + uDiffuseLight * cos_angle;
+//    t = uDiffuseLight * cos_angle;
+    fFragColor = clamp(t, 0., 1.);
 }
