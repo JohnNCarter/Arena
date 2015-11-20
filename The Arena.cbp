@@ -11,6 +11,7 @@
 				<Option object_output="obj/Release" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-Wno-write-strings" />
 					<Add directory="../include" />
@@ -21,33 +22,33 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-llibAntTweakBar" />
-					<Add directory="../../../graphics/lib" />
-					<Add directory="../../../graphics/GLFW2/lib" />
 					<Add library="mingw32" />
 					<Add library="glew32" />
 					<Add library="glfw" />
 					<Add library="opengl32" />
 					<Add library="gdi32" />
+					<Add directory="../../../graphics/lib" />
+					<Add directory="../../../graphics/GLFW2/lib" />
 				</Linker>
 			</Target>
 		</Build>
-		<Unit filename="basic.cpp">
-		</Unit>
-		<Unit filename="glslprogram.cpp">
-		</Unit>
-		<Unit filename="objects.cpp">
-		</Unit>
-		<Unit filename="utils.cpp">
-		</Unit>
-		<Unit filename="vertexbufferobject.cpp">
-		</Unit>
-		<Unit filename="glslprogram.h">
-		</Unit>
-		<Unit filename="Objects.h">
-		</Unit>
-		<Unit filename="vertexbufferobject.h">
-		</Unit>
-		<Extensions />
+		<Unit filename="Objects.h" />
+		<Unit filename="basic.cpp" />
+		<Unit filename="glslprogram.cpp" />
+		<Unit filename="glslprogram.h" />
+		<Unit filename="light1.frag" />
+		<Unit filename="light1.vert" />
+		<Unit filename="objects.cpp" />
+		<Unit filename="utils.cpp" />
+		<Unit filename="vbo.frag" />
+		<Unit filename="vbo.vert" />
+		<Unit filename="vbo2.frag" />
+		<Unit filename="vertexbufferobject.cpp" />
+		<Unit filename="vertexbufferobject.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
-

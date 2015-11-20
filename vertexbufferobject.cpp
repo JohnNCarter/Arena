@@ -77,7 +77,7 @@ VertexBufferObject::Draw( ) {
     // draw
     // reset vao.
 //    if(verbose) fprintf(stderr, "Drawing\n");
-//    printf("VBO is %s, %d\n", vboName, numVertices);
+    printf("VBO is %s, %d\n", vboName, numVertices);
     assert(numVertices > 0);
     glBindVertexArray(arrayBuffer);
     Check("drawing VBO.Draw");

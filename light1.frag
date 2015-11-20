@@ -15,9 +15,8 @@ void main(void) {
     vec4 t;
     float cos_angle = dot(vEx_Normal, uLightVector);
     cos_angle = clamp(cos_angle, 0.0, 1.0);
-    t = vec4(vEx_Normal, 1.);
-    t = vec4(cos_angle, 0., 0., 1.);
     t = uAmbientLight + uDiffuseLight * cos_angle;
-//    t = uDiffuseLight * cos_angle;
+
+//    t = uAmbientLight + t * 0.000001;
     fFragColor = clamp(t, 0., 1.);
 }

@@ -30,6 +30,65 @@ const float lod = PI/32.;
 #include "Objects.h"
 
 
+void norm_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
+    /*
+     draw a polygon via global list of vertices
+     Use pointer to VBO
+     */
+
+    /*
+     * Bits of a cube
+     */
+    GLfloat vertices[][3] = {{-0.5,-0.5,-0.5},{0.5,-0.5,-0.5},
+            {0.5,0.5,-0.5}, {-0.5,0.5,-0.5}, {-0.5,-0.5,0.5},
+            {0.5,-0.5,0.5}, {0.5,0.5,0.5}, {-0.5,0.5,0.5}
+        };
+
+    GLfloat normals[][3] = {{-1.0,-1.0,-1.0},{1.0,-1.0,-1.0},
+            {1.0,1.0,-1.0}, {-1.0,1.0,-1.0}, {-1.0,-1.0,1.0},
+            {1.0,-1.0,1.0}, {1.0,1.0,1.0}, {-1.0,1.0,1.0}
+        };
+
+    GLfloat colors[][3] = {{0.0,0.0,0.0},{1.0,0.0,0.0},
+            {1.0,1.0,0.0}, {0.0,1.0,0.0}, {0.0,0.0,1.0},
+            {1.0,0.0,1.0}, {1.0,1.0,1.0}, {0.0,1.0,1.0}
+        };
+    printf("Polygon %s\n", C->vboName);
+    // calculate center of polygon, divide by 4 then subtracct center coordinates
+    glm::vec3 center;
+    center = glm::vec3(vertices[a][0], vertices[a][1], vertices[a][2]);
+    center += glm::vec3(vertices[b][0], vertices[b][1], vertices[b][2]);
+    center += glm::vec3(vertices[c][0], vertices[c][1], vertices[c][2]);
+    center += glm::vec3(vertices[d][0], vertices[d][1], vertices[d][2]);
+    center = glm::normalize(center/ 4.0f); // Implied subtraction from centre of polygon.
+    C->glColor3f(1., 1., 1.0);
+    C->glVertex3fv(center);
+    C->glColor3f(0., 1., 1.0); // shaded Normals
+    C->glVertex3fv(glm::vec3(0.));
+    }
+
+VertexBufferObject makeNormals(void) {
+    VertexBufferObject Normals;
+    Normals.vboName = "Normals";
+    printf("WireNormalsMesh\n");
+    Normals.SetVerbose(true);
+    Normals.CollapseCommonVertices( false );
+    Normals.SetTol( .001f );// how close need to be to collapse vertices, ignored at the moment.
+    Normals.UseBufferObjects(true); // Not needed as this is the only option.
+    Normals.glBegin( GL_LINES);
+
+
+    norm_polygon(&Normals, 0,3,2,1);
+    norm_polygon(&Normals, 2,3,7,6);
+    norm_polygon(&Normals, 0,4,7,3);
+    norm_polygon(&Normals, 1,2,6,5);
+    norm_polygon(&Normals, 4,5,6,7);
+    norm_polygon(&Normals, 0,1,5,4);
+
+    Normals.glEnd();
+    Normals.Print();
+    return Normals;
+    }
 void vbo_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
     /*
      draw a polygon via global list of vertices
@@ -203,7 +262,7 @@ VertexBufferObject makeSolidDiskMesh(float radius) {
     const float Radius = radius;
     Disk.glBegin( GL_TRIANGLE_FAN );
 //    Disk.glColor3f(1.0, 1., 0.);
-    Disk.glNormal3fv(glm::normalize(glm::vec3(.0, 0., 1.)));
+    Disk.glNormal3fv(glm::normalize(glm::vec3(.0, 1., 1.)));
     glm::vec3 p, n;
     Disk.glVertex3f(0., 0., 0.); //Start point
     Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.); // First Point

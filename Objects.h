@@ -9,3 +9,4 @@ VertexBufferObject makeWireCircleMesh(float radius);
 VertexBufferObject makeWireDiskMesh(float radius);
 VertexBufferObject makeSolidDiskMesh(float radius);
 VertexBufferObject makeWireAxisMesh(float Length);
+VertexBufferObject makeNormals(void);

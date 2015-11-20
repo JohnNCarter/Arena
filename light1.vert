@@ -14,5 +14,5 @@ out vec3 vEx_Normal;
 void main(void) {
     gl_Position = uMVPmatrix * aPosition;
 //    vEx_Color = aColor;
-    vEx_Normal = aNormal;
+    vEx_Normal = normalize(aNormal);
 }
