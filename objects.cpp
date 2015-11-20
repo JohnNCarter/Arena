@@ -54,10 +54,18 @@ void vbo_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
             {1.0,0.0,1.0}, {1.0,1.0,1.0}, {0.0,1.0,1.0}
         };
     printf("Polygon %s\n", C->vboName);
-
-    C->glVertex3f(vertices[a][0], vertices[a][1], vertices[a][2]);
-    C->glVertex3f(vertices[b][0], vertices[b][1], vertices[b][2]);
+    // calculate center of polygon, divide by 4 then subtracct center coordinates
+    glm::vec3 center;
+    center = glm::vec3(vertices[a][0], vertices[a][1], vertices[a][2]);
+    center += glm::vec3(vertices[b][0], vertices[b][1], vertices[b][2]);
+    center += glm::vec3(vertices[c][0], vertices[c][1], vertices[c][2]);
+    center += glm::vec3(vertices[d][0], vertices[d][1], vertices[d][2]);
+    center = glm::normalize(center/ 4.0f); // Implied subtraction from centre of polygon.
+    C->glNormal3fv(center);
+    C->glVertex3fv(vertices[a]);
+    C->glVertex3fv(vertices[b]);
     C->glVertex3fv(vertices[c]);
+    C->glNormal3fv(center);
     C->glVertex3fv(vertices[c]);
     C->glVertex3fv(vertices[d]);
     C->glVertex3fv(vertices[a]);

@@ -188,7 +188,7 @@ int main(void) {
 
     bar.Space();
 
-    bar.AddVarRW("Quit", TW_TYPE_BOOL32, &quit_app, "label='Quit' key=q help='Exit the program or press Q "); // Quit
+    bar.AddVarRW("Quit", TW_TYPE_BOOL32, &quit_app, "label='Quit' key=q help='Exit the program or press Q' "); // Quit
 
     bar.Define("C/CX min = 1. max = 10. step = 0.1");
     bar.Define("C/FOV min = 1. max = 60. step = 0.5");
@@ -255,6 +255,17 @@ int main(void) {
 
         float fnbox = (float) nbox;
         float sbox = 2.5 * 16. / (fnbox - 1.);
+        Cube.SelectVAO();
+        LL1.Use();
+        LL1.SetAttribute( "aPosition", Cube.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
+//        if(Cube.hasColors)
+//            LL1.SetAttribute( "aColor", Cube.vertexAtributesMap[COLOR_ATTRIBUTE ] );
+        if(Cube.hasNormals)
+            LL1.SetAttribute( "aNormal", Cube.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
+        LL1.SetUniform("uAmbientLight", ambientLight);
+        LL1.SetUniform("uDiffuseLight", diffuseLight);
+        lightVector = glm::normalize(lightVector);
+        LL1.SetUniform("uLightVector", lightVector);
 
         for(float i = 0; i<fnbox; i++) {
             float angle = 2. * M_PI * i/ fnbox;
@@ -263,8 +274,13 @@ int main(void) {
             glm::mat4 translateCube = glm::translate(glm::mat4(1.), glm::vec3(5.f, 0.f, 0.5f));
             glm::mat4 rotateCube = glm::rotate(glm::mat4(1.), angle, glm::vec3(0.f, 0.f, 1.f));
             MVP = Projection * CamPosition * rotateCube * translateCube * scaleCube;
-            app.Render(Cube, OO, MVP);
+            LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
+            Cube.Draw();
+
+//            app.Render(Cube, OO, MVP);
         }
+        LL1.Use(0);
+        Cube.DeSelectVAO();
         bar.Draw();
         app.SwapBuffers();// Swap front and back rendering buffers
 //        break;
