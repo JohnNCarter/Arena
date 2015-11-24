@@ -263,29 +263,29 @@ VertexBufferObject::Print( FILE *fpout ) {
     // always has vertices
     fprintf(fpout, "Vertex Object %s %d vertices\n", vboName, vertexContainer.size());
     unsigned int limit = std::min((unsigned int)100, (unsigned int) vertexContainer.size());
-//    for(unsigned int i = 0; i < limit; i++) {
-//        for(int k = 0; k < 3; k++) {
-//            fprintf(fpout, " %10.2f", vertexContainer[i][k]);
-//            }
-//        fprintf(fpout, "\n");
-//        }
+    for(unsigned int i = 0; i < limit; i++) {
+        for(int k = 0; k < 3; k++) {
+            fprintf(fpout, " %10.2f", vertexContainer[i][k]);
+            }
+        fprintf(fpout, "\n");
+        }
     if(hasColors) {
         fprintf(fpout, "Color Object %d vertices\n", colorContainer.size());
-//        for(unsigned int i = 0; i < limit; i++) {
-//            for(int k = 0; k < 3; k++) {
-//                fprintf(fpout, " %10.2f", colorContainer[i][k]);
-//                }
-//            fprintf(fpout, "\n");
-//            }
+        for(unsigned int i = 0; i < limit; i++) {
+            for(int k = 0; k < 3; k++) {
+                fprintf(fpout, " %10.2f", colorContainer[i][k]);
+                }
+            fprintf(fpout, "\n");
+            }
     }
     if(hasNormals) {
         fprintf(fpout, "Normal Object %d vertices\n", normalContainer.size());
-//        for(unsigned int i = 0; i < limit; i++) {
-//            for(int k = 0; k < 3; k++) {
-//                fprintf(fpout, " %10.2f", normalContainer[i][k]);
-//                }
-//            fprintf(fpout, "\n");
-//            }
+        for(unsigned int i = 0; i < limit; i++) {
+            for(int k = 0; k < 3; k++) {
+                fprintf(fpout, " %10.2f", normalContainer[i][k]);
+                }
+            fprintf(fpout, "\n");
+            }
     }
     if(hasTexCoords) {
         fprintf(fpout, "TexCoord Object %d vertices\n", textureContainer.size());

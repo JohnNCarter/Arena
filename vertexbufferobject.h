@@ -123,7 +123,7 @@ class VertexBufferObject {
         void glVertex3f( GLfloat, GLfloat, GLfloat );
         void glVertex3fv( GLfloat * );
         void glVertex3fv( glm::vec3 );
-        void Print( FILE * = stderr );
+        void Print( FILE * = stdout );
         void makeObj( const char *name );
         void RestartPrimitive( );
         void SetTol( float );

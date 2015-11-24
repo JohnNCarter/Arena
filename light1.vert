@@ -9,7 +9,7 @@ in vec3 aNormal;
 uniform mat4 uMVPmatrix;
 
 //out vec3 vEx_Color;
-out vec3 vEx_Normal;
+flat out vec3 vEx_Normal;
 
 void main(void) {
     gl_Position = uMVPmatrix * aPosition;

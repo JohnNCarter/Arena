@@ -61,10 +61,14 @@ void norm_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
     center += glm::vec3(vertices[c][0], vertices[c][1], vertices[c][2]);
     center += glm::vec3(vertices[d][0], vertices[d][1], vertices[d][2]);
     center = glm::normalize(center/ 4.0f); // Implied subtraction from centre of polygon.
-    C->glColor3f(1., 1., 1.0);
+    C->glColor3f(0., 0., 0.0);
+    C->glColor3f(0., 0., 0.0);
+    C->glVertex3f(0., 0., 0.);
+
+    C->glColor3f(1., 0., 0.0); // shaded Normals
+//    C->glVertex3fv(glm::vec3(0.));
+//    center = center * 2.0f;
     C->glVertex3fv(center);
-    C->glColor3f(0., 1., 1.0); // shaded Normals
-    C->glVertex3fv(glm::vec3(0.));
     }
 
 VertexBufferObject makeNormals(void) {
@@ -90,14 +94,7 @@ VertexBufferObject makeNormals(void) {
     return Normals;
     }
 void vbo_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
-    /*
-     draw a polygon via global list of vertices
-     Use pointer to VBO
-     */
 
-    /*
-     * Bits of a cube
-     */
     GLfloat vertices[][3] = {{-0.5,-0.5,-0.5},{0.5,-0.5,-0.5},
             {0.5,0.5,-0.5}, {-0.5,0.5,-0.5}, {-0.5,-0.5,0.5},
             {0.5,-0.5,0.5}, {0.5,0.5,0.5}, {-0.5,0.5,0.5}
@@ -112,6 +109,8 @@ void vbo_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
             {1.0,1.0,0.0}, {0.0,1.0,0.0}, {0.0,0.0,1.0},
             {1.0,0.0,1.0}, {1.0,1.0,1.0}, {0.0,1.0,1.0}
         };
+
+
     printf("Polygon %s\n", C->vboName);
     // calculate center of polygon, divide by 4 then subtracct center coordinates
     glm::vec3 center;
@@ -121,12 +120,23 @@ void vbo_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
     center += glm::vec3(vertices[d][0], vertices[d][1], vertices[d][2]);
     center = glm::normalize(center/ 4.0f); // Implied subtraction from centre of polygon.
     C->glNormal3fv(center);
+
     C->glVertex3fv(vertices[a]);
+
+    C->glNormal3fv(center);
     C->glVertex3fv(vertices[b]);
+
     C->glVertex3fv(vertices[c]);
     C->glNormal3fv(center);
+
+    C->glNormal3fv(center);
+
     C->glVertex3fv(vertices[c]);
+
+    C->glNormal3fv(center);
     C->glVertex3fv(vertices[d]);
+
+    C->glNormal3fv(center);
     C->glVertex3fv(vertices[a]);
     }
 
@@ -140,7 +150,7 @@ VertexBufferObject makeWireCubeMesh(void) {
     Cube.UseBufferObjects(true); // Not needed as this is the only option.
     Cube.glBegin( GL_TRIANGLES );
 
-    Cube.glColor3f(0., 0., 1.0); // blue Cube
+//    Cube.glColor3f(0., 0., 1.0); // blue Cube
 
     vbo_polygon(&Cube, 0,3,2,1);
     vbo_polygon(&Cube, 2,3,7,6);
@@ -151,6 +161,7 @@ VertexBufferObject makeWireCubeMesh(void) {
 
     Cube.glEnd();
     Cube.Print();
+    Cube.makeObj("cube.obj");
     return Cube;
     }
 
