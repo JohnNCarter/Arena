@@ -138,14 +138,17 @@ public:
 int main(void) {
     int wire = 0;
     int depth = 1;
-    int autorotate = 1;
-    int overhead = true;
-    int showNormals = true;
+    int autorotate = 0;
+    int overhead = false;
+    int showNormals = false;
     int quit_app = 0;
     float quat[4];
-    float CameraX = 11.;
+    float camDistance = -7.;
     float fov = 45.;
-    int nbox = 4;
+    int nbox = 20;
+    int startPhysics = false;
+    int resetPhysics = true;
+    int runningPhysics = false;
     MyApp app;
     int k = 0;
     float axis[3] = {1., 0., 0.};
@@ -165,11 +168,20 @@ int main(void) {
     GLSLProgram OO                  = app.SetShaders("vbo.vert", "vbo.frag");
     GLSLProgram OO2                 = app.SetShaders("vbo.vert", "vbo2.frag");
     GLSLProgram LL1                 = app.SetShaders("light1.vert", "light1.frag");
+
     app.SetBackgroundColour(0.5, 0.5, 0.5, 1.);
 
-    glm::vec4 ambientLight  = glm::vec4(.5, .5, 1., 1.);
-    glm::vec4 diffuseLight  = glm::vec4(.0, 1., .0, 1.);
+    glm::vec4 ambientLight      = glm::vec4(.5, .5, 1., 1.);
+    glm::vec4 diffuseLight      = glm::vec4(.0, 1., .0, 1.);
+    glm::vec4 ambientTankLight  = glm::vec4(.5, .5, .5, 1.);
+    glm::vec4 diffuseTankLight  = glm::vec4(.0, 1., .0, 1.);
+
     glm::vec3 lightVector   = glm::vec3(glm::normalize(glm::vec3(0., 0., 1.0)));
+    glm::vec3 camVector     = glm::vec3(glm::normalize(glm::vec3(-10., 0., 1.)));
+//    float camDistance       = 10.;
+    glm::vec3 camTarget     = glm::vec3(0.f, 0.f, 0.f);
+
+    glm::vec3 tankSize = glm::vec3(1., .5, .2);
 
     // Setup UI
 
@@ -184,9 +196,12 @@ int main(void) {
     bar.AddVarRW("Z", TW_TYPE_BOOL32, &depth, "label='Z-Buffer' key=z help='Toggle z-buffer mode display mode.' "); // z-buffer
     bar.AddVarRW("OV", TW_TYPE_BOOL32, &overhead, "label='Overhead|Tank'  help='Go to overhead view.' "); // manual rotate flag
     bar.AddVarRW("AR", TW_TYPE_BOOL32, &autorotate, "label='Auto Rotate' key=r help='This applies continual rotation.' "); // auto rotate
-    bar.AddVarRW("NV", TW_TYPE_BOOL32, &showNormals, "label='Show Normal Vectors");
+//    bar.AddVarRW("NV", TW_TYPE_BOOL32, &showNormals, "label='Show Normal Vectors");
+    bar.AddVarRW("resetP", TW_TYPE_BOOL32, &resetPhysics, "label='Reset Physics Engine");
+    bar.AddVarRW("startP", TW_TYPE_BOOL32, &showNormals, "label='Start Physics Engine");
+    bar.AddVarRW("runningP", TW_TYPE_BOOL32, &showNormals, "label='Run/Stop Physics Engine");
 
-    bar.AddVarRW("CX", TW_TYPE_FLOAT, &CameraX, "label='Camera X'  help='Move Camera X.' "); // manual X
+    bar.AddVarRW("CX", TW_TYPE_FLOAT, &camDistance, "label='Camera Distance'  help='Move Camera from Target' "); // manual X
     bar.AddVarRW("FOV", TW_TYPE_FLOAT, &fov, "label='Field of View'  help='Control Field of view' "); // manual FOV
 
     bar.AddVarRW("NB", TW_TYPE_INT32, &nbox, "label='Number of boxes' key=r help='This controls the number of boxes drawn.' "); // auto rotate
@@ -206,16 +221,19 @@ int main(void) {
     TwType structVec3, structVec4;
 
     structVec3 = TwDefineStruct("Vec3", vec3members, 3, sizeof(glm::vec3), NULL, NULL);
-    structVec4 = TwDefineStruct("Vec4", vec4members, 3, sizeof(glm::vec4), NULL, NULL);
+    structVec4 = TwDefineStruct("Vec4", vec4members, 4, sizeof(glm::vec4), NULL, NULL);
 
     bar.AddVarRW("CamP", structVec3, glm::value_ptr(cameraPosition), "Label='Camera Position'");
     bar.AddVarRW("Ambient", structVec4, glm::value_ptr(ambientLight), "Label='Ambient Light'");
     bar.AddVarRW("Diff", structVec4, glm::value_ptr(diffuseLight), "Label='Diffuse Light'");
 
-    bar.AddVarRW("RS", TW_TYPE_DIR3F, glm::value_ptr(lightVector), "label='Light Vector'  help='This is the vector to disk lighting.' "); // manual rotate cpntrol
-    bar.AddVarRW("LV", TW_TYPE_QUAT4F, &quat, "label='Rotate Shape'  help='Rotate this to spin object.' "); // manual rotate cpntrol
+    bar.AddVarRW("TankDiff", structVec4, glm::value_ptr(diffuseTankLight), "Label='Diffuse Light for Tank'");
+    bar.AddVarRW("TankAmbient", structVec4, glm::value_ptr(ambientTankLight), "Label='Ambient Light for Tank'");
 
-    bar.Define("C/CX min = 1. max = 10. step = 0.1");
+    bar.AddVarRW("RS", TW_TYPE_DIR3F, glm::value_ptr(lightVector), "label='Light Vector'  help='This is the vector to disk lighting.' "); // manual rotate cpntrol
+//    bar.AddVarRW("LV", TW_TYPE_QUAT4F, &quat, "label='Rotate Shape'  help='Rotate this to spin object.' "); // manual rotate cpntrol
+
+    bar.Define("C/CX min = 3. max = 35. step = 0.1");
     bar.Define("C/FOV min = 1. max = 60. step = 0.5");
     bar.Define("C/NB min =2 max = 16 step = 1");
 
@@ -238,95 +256,76 @@ int main(void) {
             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if(autorotate) {
-            float angle = (float) (k % 3600) / 10.;
-            SetQuaternionFromAxisAngle(raxis, angle, quat);
-            k++;
-        }
-        glm::mat4 rotation;
-        ConvertQuaternionToMatrix(quat, glm::value_ptr(rotation)); //glm::value_ptr used to get pointer to underlying matrix data.
-        glm::mat4 Projection = glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
-        glm::mat4 Projection45 = glm::perspective(glm::radians(45.f), aspect, 0.1f, 100.0f);
-        glm::mat4 TetraPosition = glm::translate(glm::mat4(1.), glm::vec3(0.f, 0.f, 0.0f));
-        glm::mat4 CamPosition, MVP;
+
+        glm::mat4 Projection   = glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
+        glm::mat4 TankPosition = glm::translate(glm::mat4(1.), glm::vec3(0.f, 0.f, 0.0f));
+        glm::mat4 TankRotation = glm::rotate(glm::mat4(1.),glm::radians(0.f), glm::vec3(0.f, 0.f, 1.f));
+        glm::mat4 TankScale    = glm::scale(glm::mat4(1.), tankSize);
+
+        glm::mat4 CamView, MVP;
         if(overhead) {
-            CamPosition = glm::lookAt(cameraPosition, glm::vec3(0.), glm::vec3(1.0, 0., 0.));
+            CamView = glm::lookAt(cameraPosition, glm::vec3(0.), glm::vec3(1.0, 0., 0.));
         } else {
-            CamPosition = glm::lookAt(glm::vec3(CameraX, 0., 2.5), glm::vec3(0., 0., 0.), glm::vec3(0., 0., 1.));
+            CamView = glm::lookAt(camTarget + camVector * camDistance, camTarget, glm::vec3(0., 0., 1.));
+        }
+        if(resetPhysics) {
+            resetPhysics = false;
+            startPhysics = false;
+            runningPhysics = false;
+        }
+        if(startPhysics) {
+            resetPhysics = false;
+            startPhysics = false;
+            runningPhysics = true;
         }
 
-        MVP = Projection * CamPosition * TetraPosition * rotation;
-        app.Render(Tetrahedron, OO, MVP);
-        MVP = Projection45 * CamPosition;
-        app.Render(Axis, OO, MVP);
         float fnbox = (float) nbox;
         float sbox = 2.5 * 16. / (fnbox - 1.);
 
-        if(showNormals) {
-            OO.Use();
-            OO.SetAttribute( "aPosition", Disk.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
-            OO.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
-            Normals.SelectVAO();
-            OO.SetAttribute( "aPosition", Normals.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
-            if(Normals.hasColors)
-                OO.SetAttribute( "aColor", Normals.vertexAtributesMap[COLOR_ATTRIBUTE ] );
+        Disk.SelectVAO();
+        LL1.Use();
+        LL1.SetAttribute( "aPosition", Disk.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
+        if(Disk.hasColors)  LL1.SetAttribute( "aColor", Disk.vertexAtributesMap[COLOR_ATTRIBUTE ] );
+        if(Disk.hasNormals) LL1.SetAttribute( "aNormal", Disk.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
 
-            for(float i = 0; i<fnbox; i++) {
-                float angle = 2. * M_PI * i/ fnbox;
-                glm::mat4 scaleNormals = glm::mat4(1.0);//glm::scale( glm::vec3(2.0f, 1.f, 1.f));
-//                scaleNormals[1][1] = sbox;
-                glm::mat4 translateNormals = glm::translate(glm::mat4(1.), glm::vec3(5.f, 0.f, 0.5f));
-                glm::mat4 rotateNormals = glm::rotate(glm::mat4(1.), angle, glm::vec3(0.f, 0.f, 1.f));
-                MVP = Projection * CamPosition * rotateNormals * translateNormals * scaleNormals;
-                OO.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
-                Normals.Draw();
-            }
-            OO.Use(0);
-            Normals.DeSelectVAO();
-        } else {
-            Disk.SelectVAO();
-            LL1.Use();
-            LL1.SetAttribute( "aPosition", Disk.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
-            if(Disk.hasColors)
-                LL1.SetAttribute( "aColor", Disk.vertexAtributesMap[COLOR_ATTRIBUTE ] );
-            if(Disk.hasNormals)
-                LL1.SetAttribute( "aNormal", Disk.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
+        LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
+        LL1.SetUniform("uAmbientLight", ambientLight);
+        LL1.SetUniform("uDiffuseLight", diffuseLight);
+        lightVector = glm::normalize(lightVector);
+        LL1.SetUniform("uLightVector", lightVector);
+//        Disk.Draw();
+        Disk.DeSelectVAO();
+        // -
+        Cube.SelectVAO();
 
-            LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
-            LL1.SetUniform("uAmbientLight", ambientLight);
-            LL1.SetUniform("uDiffuseLight", diffuseLight);
-            lightVector = glm::normalize(lightVector);
-            LL1.SetUniform("uLightVector", lightVector);
-            Disk.Draw();
-            Disk.DeSelectVAO();
+        LL1.SetAttribute( "aPosition", Cube.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
+        if(Cube.hasNormals) LL1.SetAttribute( "aNormal", Cube.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
 
-            Cube.SelectVAO();
-            LL1.SetAttribute( "aPosition", Cube.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
-//        if(Cube.hasColors)
-//            LL1.SetAttribute( "aColor", Cube.vertexAtributesMap[COLOR_ATTRIBUTE ] );
-            if(Cube.hasNormals)
-                LL1.SetAttribute( "aNormal", Cube.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
-//            LL1.SetUniform("uAmbientLight", ambientLight);
-//            LL1.SetUniform("uDiffuseLight", diffuseLight);
-//            lightVector = glm::normalize(lightVector);
-//            LL1.SetUniform("uLightVector", lightVector);
-
-            for(float i = 0; i<fnbox; i++) {
-                float angle = 2. * M_PI * i/ fnbox;
-                glm::mat4 scaleCube = glm::mat4(1.0);//glm::scale( glm::vec3(2.0f, 1.f, 1.f));
+        for(float i = 0; i<fnbox; i++) {
+            float angle = 2. * M_PI * i/ fnbox;
+            glm::mat4 scaleCube = glm::mat4(1.0);//glm::scale( glm::vec3(2.0f, 1.f, 1.f));
 //                scaleCube[1][1] = sbox;
-                glm::mat4 translateCube = glm::translate(glm::mat4(1.), glm::vec3(5.f, 0.f, 0.5f));
-                glm::mat4 rotateCube = glm::rotate(glm::mat4(1.), angle, glm::vec3(0.f, 0.f, 1.f));
-                MVP = Projection * CamPosition * rotateCube * translateCube * scaleCube;
-                LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
-                Cube.Draw();
-            }
-            LL1.Use(0);
-            Cube.DeSelectVAO();
+            glm::mat4 translateCube = glm::translate(glm::mat4(1.), glm::vec3(5.f, 0.f, 0.5f));
+            glm::mat4 rotateCube = glm::rotate(glm::mat4(1.), angle, glm::vec3(0.f, 0.f, 1.f));
+            MVP = Projection * CamView * rotateCube * translateCube * scaleCube;
+            LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
+            Cube.Draw();
         }
+
+        // tank goes here.
+        MVP = Projection * CamView * TankPosition * TankRotation * TankScale;
+        LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
+
+        LL1.SetUniform("uAmbientLight", ambientTankLight);
+        LL1.SetUniform("uDiffuseLight", diffuseTankLight);
+
+        Cube.Draw();
+
+        LL1.Use(0);
+        Cube.DeSelectVAO();
+
         bar.Draw();
         glFlush();
         app.SwapBuffers();// Swap front and back rendering buffers
     }
-    printf("Bye-Bye\n");
 }
