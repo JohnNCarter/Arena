@@ -4,7 +4,7 @@
 
 VertexBufferObject makeWireTetrahedronMesh(void);
 VertexBufferObject makeWireBoxMesh(void);
-VertexBufferObject makeWireCubeMesh(void);
+VertexBufferObject makeCubeMesh(void);
 VertexBufferObject makeWireCircleMesh(float radius);
 VertexBufferObject makeWireDiskMesh(float radius);
 VertexBufferObject makeSolidDiskMesh(float radius);

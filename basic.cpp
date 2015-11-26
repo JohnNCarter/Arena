@@ -67,12 +67,12 @@ void MultiplyQuaternions(const float *q1, const float *q2, float *qout) {
 
 
 class Mybar: public TweakBar::AntTweakBar {
-  public:
+public:
 
 };
 
 class MyApp: public TinyG::TinyG {
-  public:
+public:
     MyApp(void) {
     }
     //~ VertexBufferObject VB;
@@ -155,23 +155,21 @@ int main(void) {
 
     // Setup Drawing
 
-    VertexBufferObject Tetrahedron = makeWireTetrahedronMesh();
-    VertexBufferObject Axis = makeWireAxisMesh(100.);
-    VertexBufferObject Disk = makeSolidDiskMesh(5.);
-    VertexBufferObject Cube = makeWireCubeMesh();
-    VertexBufferObject Normals = makeNormals();
+    VertexBufferObject Tetrahedron  = makeWireTetrahedronMesh();
+    VertexBufferObject Axis         = makeWireAxisMesh(100.);
+    VertexBufferObject Disk         = makeSolidDiskMesh(5.);
+    VertexBufferObject Cube         = makeCubeMesh();
+    VertexBufferObject Normals      = makeNormals();
     printf("VBO number = %d\n", Normals.numVertices);
-    GLSLProgram OO = app.SetShaders("vbo.vert", "vbo.frag");
-    GLSLProgram OO2 = app.SetShaders("vbo.vert", "vbo2.frag");
-    GLSLProgram LL1 = app.SetShaders("light1.vert", "light1.frag");
+
+    GLSLProgram OO                  = app.SetShaders("vbo.vert", "vbo.frag");
+    GLSLProgram OO2                 = app.SetShaders("vbo.vert", "vbo2.frag");
+    GLSLProgram LL1                 = app.SetShaders("light1.vert", "light1.frag");
     app.SetBackgroundColour(0.5, 0.5, 0.5, 1.);
 
-    glm::vec4 ambientLight = glm::vec4(.5, .5, 1., 1.);
-    glm::vec4 diffuseLight = glm::vec4(.0, 1., .0, 1.);
-    glm::vec3 lightVector = glm::vec3(glm::normalize(glm::vec3(0., 0., 1.0)));
-    Print("lightvector");
-    print(lightVector);
-
+    glm::vec4 ambientLight  = glm::vec4(.5, .5, 1., 1.);
+    glm::vec4 diffuseLight  = glm::vec4(.0, 1., .0, 1.);
+    glm::vec3 lightVector   = glm::vec3(glm::normalize(glm::vec3(0., 0., 1.0)));
 
     // Setup UI
 
@@ -258,10 +256,9 @@ int main(void) {
         }
 
         MVP = Projection * CamPosition * TetraPosition * rotation;
-//        app.Render(Tetrahedron, OO, MVP);
-        app.Render(Cube, OO, MVP);
+        app.Render(Tetrahedron, OO, MVP);
         MVP = Projection45 * CamPosition;
-//        app.Render(Axis, OO, MVP);
+        app.Render(Axis, OO, MVP);
         float fnbox = (float) nbox;
         float sbox = 2.5 * 16. / (fnbox - 1.);
 
@@ -273,8 +270,6 @@ int main(void) {
             OO.SetAttribute( "aPosition", Normals.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
             if(Normals.hasColors)
                 OO.SetAttribute( "aColor", Normals.vertexAtributesMap[COLOR_ATTRIBUTE ] );
-//            if(Normals.hasNormals)
-//                OO.SetAttribute( "aNormal", Normals.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
 
             for(float i = 0; i<fnbox; i++) {
                 float angle = 2. * M_PI * i/ fnbox;
@@ -285,8 +280,6 @@ int main(void) {
                 MVP = Projection * CamPosition * rotateNormals * translateNormals * scaleNormals;
                 OO.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
                 Normals.Draw();
-
-//            app.Render(Normals, OO, MVP);
             }
             OO.Use(0);
             Normals.DeSelectVAO();
@@ -298,26 +291,25 @@ int main(void) {
                 LL1.SetAttribute( "aColor", Disk.vertexAtributesMap[COLOR_ATTRIBUTE ] );
             if(Disk.hasNormals)
                 LL1.SetAttribute( "aNormal", Disk.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
+
             LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
             LL1.SetUniform("uAmbientLight", ambientLight);
             LL1.SetUniform("uDiffuseLight", diffuseLight);
             lightVector = glm::normalize(lightVector);
             LL1.SetUniform("uLightVector", lightVector);
-//            Disk.Draw();
-            LL1.Use(0);
+            Disk.Draw();
             Disk.DeSelectVAO();
-//            continue;
+
             Cube.SelectVAO();
-            LL1.Use();
             LL1.SetAttribute( "aPosition", Cube.vertexAtributesMap[VERTEX_ATTRIBUTE ]);
 //        if(Cube.hasColors)
 //            LL1.SetAttribute( "aColor", Cube.vertexAtributesMap[COLOR_ATTRIBUTE ] );
             if(Cube.hasNormals)
                 LL1.SetAttribute( "aNormal", Cube.vertexAtributesMap[NORMAL_ATTRIBUTE ] );
-            LL1.SetUniform("uAmbientLight", ambientLight);
-            LL1.SetUniform("uDiffuseLight", diffuseLight);
-            lightVector = glm::normalize(lightVector);
-            LL1.SetUniform("uLightVector", lightVector);
+//            LL1.SetUniform("uAmbientLight", ambientLight);
+//            LL1.SetUniform("uDiffuseLight", diffuseLight);
+//            lightVector = glm::normalize(lightVector);
+//            LL1.SetUniform("uLightVector", lightVector);
 
             for(float i = 0; i<fnbox; i++) {
                 float angle = 2. * M_PI * i/ fnbox;
@@ -328,8 +320,6 @@ int main(void) {
                 MVP = Projection * CamPosition * rotateCube * translateCube * scaleCube;
                 LL1.SetUniform("uMVPmatrix", MVP); /* Bind/copy our modelmatrix (MVP) variable to be a uniform called uMVPmatrix in our shaderprogram */
                 Cube.Draw();
-
-//            app.Render(Cube, OO, MVP);
             }
             LL1.Use(0);
             Cube.DeSelectVAO();
@@ -337,7 +327,6 @@ int main(void) {
         bar.Draw();
         glFlush();
         app.SwapBuffers();// Swap front and back rendering buffers
-//        break;
     }
     printf("Bye-Bye\n");
 }

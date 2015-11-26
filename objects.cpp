@@ -40,20 +40,20 @@ void norm_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
      * Bits of a cube
      */
     GLfloat vertices[][3] = {{-0.5,-0.5,-0.5},{0.5,-0.5,-0.5},
-            {0.5,0.5,-0.5}, {-0.5,0.5,-0.5}, {-0.5,-0.5,0.5},
-            {0.5,-0.5,0.5}, {0.5,0.5,0.5}, {-0.5,0.5,0.5}
-        };
+        {0.5,0.5,-0.5}, {-0.5,0.5,-0.5}, {-0.5,-0.5,0.5},
+        {0.5,-0.5,0.5}, {0.5,0.5,0.5}, {-0.5,0.5,0.5}
+    };
 
     GLfloat normals[][3] = {{-1.0,-1.0,-1.0},{1.0,-1.0,-1.0},
-            {1.0,1.0,-1.0}, {-1.0,1.0,-1.0}, {-1.0,-1.0,1.0},
-            {1.0,-1.0,1.0}, {1.0,1.0,1.0}, {-1.0,1.0,1.0}
-        };
+        {1.0,1.0,-1.0}, {-1.0,1.0,-1.0}, {-1.0,-1.0,1.0},
+        {1.0,-1.0,1.0}, {1.0,1.0,1.0}, {-1.0,1.0,1.0}
+    };
 
     GLfloat colors[][3] = {{0.0,0.0,0.0},{1.0,0.0,0.0},
-            {1.0,1.0,0.0}, {0.0,1.0,0.0}, {0.0,0.0,1.0},
-            {1.0,0.0,1.0}, {1.0,1.0,1.0}, {0.0,1.0,1.0}
-        };
-    printf("Polygon %s\n", C->vboName);
+        {1.0,1.0,0.0}, {0.0,1.0,0.0}, {0.0,0.0,1.0},
+        {1.0,0.0,1.0}, {1.0,1.0,1.0}, {0.0,1.0,1.0}
+    };
+    printf("Making Normals %s\n", C->vboName);
     // calculate center of polygon, divide by 4 then subtracct center coordinates
     glm::vec3 center;
     center = glm::vec3(vertices[a][0], vertices[a][1], vertices[a][2]);
@@ -62,14 +62,11 @@ void norm_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
     center += glm::vec3(vertices[d][0], vertices[d][1], vertices[d][2]);
     center = glm::normalize(center/ 4.0f); // Implied subtraction from centre of polygon.
     C->glColor3f(0., 0., 0.0);
-    C->glColor3f(0., 0., 0.0);
     C->glVertex3f(0., 0., 0.);
 
     C->glColor3f(1., 0., 0.0); // shaded Normals
-//    C->glVertex3fv(glm::vec3(0.));
-//    center = center * 2.0f;
     C->glVertex3fv(center);
-    }
+}
 
 VertexBufferObject makeNormals(void) {
     VertexBufferObject Normals;
@@ -92,55 +89,51 @@ VertexBufferObject makeNormals(void) {
     Normals.glEnd();
     Normals.Print();
     return Normals;
-    }
+}
 void vbo_polygon(VertexBufferObject *C, int a, int b, int c, int d) {
 
     GLfloat vertices[][3] = {{-0.5,-0.5,-0.5},{0.5,-0.5,-0.5},
-            {0.5,0.5,-0.5}, {-0.5,0.5,-0.5}, {-0.5,-0.5,0.5},
-            {0.5,-0.5,0.5}, {0.5,0.5,0.5}, {-0.5,0.5,0.5}
-        };
+        {0.5,0.5,-0.5}, {-0.5,0.5,-0.5}, {-0.5,-0.5,0.5},
+        {0.5,-0.5,0.5}, {0.5,0.5,0.5}, {-0.5,0.5,0.5}
+    };
 
     GLfloat normals[][3] = {{-1.0,-1.0,-1.0},{1.0,-1.0,-1.0},
-            {1.0,1.0,-1.0}, {-1.0,1.0,-1.0}, {-1.0,-1.0,1.0},
-            {1.0,-1.0,1.0}, {1.0,1.0,1.0}, {-1.0,1.0,1.0}
-        };
+        {1.0,1.0,-1.0}, {-1.0,1.0,-1.0}, {-1.0,-1.0,1.0},
+        {1.0,-1.0,1.0}, {1.0,1.0,1.0}, {-1.0,1.0,1.0}
+    };
 
     GLfloat colors[][3] = {{0.0,0.0,0.0},{1.0,0.0,0.0},
-            {1.0,1.0,0.0}, {0.0,1.0,0.0}, {0.0,0.0,1.0},
-            {1.0,0.0,1.0}, {1.0,1.0,1.0}, {0.0,1.0,1.0}
-        };
+        {1.0,1.0,0.0}, {0.0,1.0,0.0}, {0.0,0.0,1.0},
+        {1.0,0.0,1.0}, {1.0,1.0,1.0}, {0.0,1.0,1.0}
+    };
 
 
     printf("Polygon %s\n", C->vboName);
     // calculate center of polygon, divide by 4 then subtracct center coordinates
     glm::vec3 center;
-    center = glm::vec3(vertices[a][0], vertices[a][1], vertices[a][2]);
+    center =  glm::vec3(vertices[a][0], vertices[a][1], vertices[a][2]);
     center += glm::vec3(vertices[b][0], vertices[b][1], vertices[b][2]);
     center += glm::vec3(vertices[c][0], vertices[c][1], vertices[c][2]);
     center += glm::vec3(vertices[d][0], vertices[d][1], vertices[d][2]);
+
     center = glm::normalize(center/ 4.0f); // Implied subtraction from centre of polygon.
+
     C->glNormal3fv(center);
-
     C->glVertex3fv(vertices[a]);
-
     C->glNormal3fv(center);
     C->glVertex3fv(vertices[b]);
-
+    C->glNormal3fv(center);
     C->glVertex3fv(vertices[c]);
-    C->glNormal3fv(center);
-
-    C->glNormal3fv(center);
-
-    C->glVertex3fv(vertices[c]);
-
-    C->glNormal3fv(center);
-    C->glVertex3fv(vertices[d]);
 
     C->glNormal3fv(center);
     C->glVertex3fv(vertices[a]);
-    }
+    C->glNormal3fv(center);
+    C->glVertex3fv(vertices[c]);
+    C->glNormal3fv(center);
+    C->glVertex3fv(vertices[d]);
+}
 
-VertexBufferObject makeWireCubeMesh(void) {
+VertexBufferObject makeCubeMesh(void) {
     VertexBufferObject Cube;
     Cube.vboName = "Cube";
     printf("WireCubeMesh\n");
@@ -148,22 +141,19 @@ VertexBufferObject makeWireCubeMesh(void) {
     Cube.CollapseCommonVertices( false );
     Cube.SetTol( .001f );// how close need to be to collapse vertices, ignored at the moment.
     Cube.UseBufferObjects(true); // Not needed as this is the only option.
+
     Cube.glBegin( GL_TRIANGLES );
-
-//    Cube.glColor3f(0., 0., 1.0); // blue Cube
-
-    vbo_polygon(&Cube, 0,3,2,1);
     vbo_polygon(&Cube, 2,3,7,6);
     vbo_polygon(&Cube, 0,4,7,3);
     vbo_polygon(&Cube, 1,2,6,5);
     vbo_polygon(&Cube, 4,5,6,7);
     vbo_polygon(&Cube, 0,1,5,4);
-
     Cube.glEnd();
+
     Cube.Print();
     Cube.makeObj("cube.obj");
     return Cube;
-    }
+}
 
 VertexBufferObject makeWireBoxMesh(void) {
     VertexBufferObject Box;
@@ -195,7 +185,7 @@ VertexBufferObject makeWireBoxMesh(void) {
     Box.glEnd();
     Box.Print();
     return Box;
-    }
+}
 
 VertexBufferObject makeWireCircleMesh(float radius) {
     VertexBufferObject Circle;
@@ -212,12 +202,12 @@ VertexBufferObject makeWireCircleMesh(float radius) {
     for(theta = 0.0f; theta < PI2; theta += lod) {
         Circle.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.);
         Circle.glVertex3f(Radius * cos(theta + lod), Radius * sin(theta + lod), 0.);
-        }
+    }
     Circle.glEnd();
     Circle.Print();
     Circle.makeObj("Circle.obj");
     return Circle;
-    }
+}
 VertexBufferObject makeWireDiskMesh(float radius) {
     VertexBufferObject Disk;
     Disk.vboName = "Disk";
@@ -234,12 +224,12 @@ VertexBufferObject makeWireDiskMesh(float radius) {
     Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.); // First Point
     for(theta = lod; theta < PI2; theta += lod) {
         Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.);
-        }
+    }
     Disk.glEnd();
     Disk.Print();
     Disk.makeObj("Disk.obj");
     return Disk;
-    }
+}
 //VertexBufferObject makeWireDiskMesh(float radius) {
 //    VertexBufferObject Disk;
 //    Disk.vboName = "Disk";
@@ -279,12 +269,12 @@ VertexBufferObject makeSolidDiskMesh(float radius) {
     Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.); // First Point
     for(theta = lod; theta < PI2; theta += lod) {
         Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.);
-        }
+    }
     Disk.glEnd();
     Disk.Print();
     Disk.makeObj("Disk.obj");
     return Disk;
-    }
+}
 
 VertexBufferObject makeWireAxisMesh(float Length) {
     VertexBufferObject Axis;
@@ -312,29 +302,29 @@ VertexBufferObject makeWireAxisMesh(float Length) {
     Axis.Print();
     Axis.makeObj("Axis.obj");
     return Axis;
-    }
+}
 
 VertexBufferObject makeWireTetrahedronMesh(void) {
     VertexBufferObject Tetrahedron;
     struct Vertex {
         GLfloat position[4];
         GLfloat color[3];
-        };
+    };
 
     struct Vertex tetrahedron[12] = {
-            {{  0.25,  0.25,  0.25  }, {  1.0f,  0.0f,  0.0f  }},
-            {{ -0.25, -0.25,  0.25  }, {  1.0f,  0.0f,  0.0f  }},
-            {{ -0.25,  0.25, -0.25  }, {  1.0f,  0.0f,  0.0f  }},
-            {{  0.25,  0.25,  0.25  }, {  0.0f,  1.0f,  0.0f  }},
-            {{ -0.25, -0.25,  0.25  }, {  0.0f,  1.0f,  0.0f  }},
-            {{  0.25, -0.25, -0.25  }, {  0.0f,  1.0f,  0.0f  }},
-            {{  0.25,  0.25,  0.25  }, {  0.0f,  0.0f,  1.0f  }},
-            {{ -0.25,  0.25, -0.25  }, {  0.0f,  0.0f,  1.0f  }},
-            {{  0.25, -0.25, -0.25  }, {  0.0f,  0.0f,  1.0f  }},
-            {{ -0.25, -0.25,  0.25  }, {  1.0f,  1.0f,  1.0f  }},
-            {{ -0.25,  0.25, -0.25  }, {  1.0f,  1.0f,  1.0f  }},
-            {{  0.25, -0.25, -0.25  }, {  1.0f,  1.0f,  1.0f  }}
-        };
+        {{  0.25,  0.25,  0.25  }, {  1.0f,  0.0f,  0.0f  }},
+        {{ -0.25, -0.25,  0.25  }, {  1.0f,  0.0f,  0.0f  }},
+        {{ -0.25,  0.25, -0.25  }, {  1.0f,  0.0f,  0.0f  }},
+        {{  0.25,  0.25,  0.25  }, {  0.0f,  1.0f,  0.0f  }},
+        {{ -0.25, -0.25,  0.25  }, {  0.0f,  1.0f,  0.0f  }},
+        {{  0.25, -0.25, -0.25  }, {  0.0f,  1.0f,  0.0f  }},
+        {{  0.25,  0.25,  0.25  }, {  0.0f,  0.0f,  1.0f  }},
+        {{ -0.25,  0.25, -0.25  }, {  0.0f,  0.0f,  1.0f  }},
+        {{  0.25, -0.25, -0.25  }, {  0.0f,  0.0f,  1.0f  }},
+        {{ -0.25, -0.25,  0.25  }, {  1.0f,  1.0f,  1.0f  }},
+        {{ -0.25,  0.25, -0.25  }, {  1.0f,  1.0f,  1.0f  }},
+        {{  0.25, -0.25, -0.25  }, {  1.0f,  1.0f,  1.0f  }}
+    };
 
     Tetrahedron.vboName = "Tetrahedron";
     Print("Start Definng shape");
@@ -349,10 +339,10 @@ VertexBufferObject makeWireTetrahedronMesh(void) {
             int k = i * 3 + j;
             Tetrahedron.glVertex3fv(tetrahedron[k].position);
             Tetrahedron.glColor3fv(tetrahedron[k].color);
-            }
         }
+    }
     Tetrahedron.glEnd();
     Tetrahedron.Print();
 
     return Tetrahedron;
-    }
+}

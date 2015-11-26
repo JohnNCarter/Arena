@@ -140,7 +140,7 @@ VertexBufferObject::glEnd( ) {
     }
     if(hasColors) {
 //        if(verbose)
-            fprintf(stderr, "Color Buffer %d created\n", attribute);
+        fprintf(stderr, "Color Buffer %d created\n", attribute);
         assert(colorContainer.size() == vertexContainer.size());
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[attribute]);
         glBufferData(GL_ARRAY_BUFFER, colorContainer.size() * sizeof(glm::vec3), colorContainer.data(), GL_STATIC_DRAW);
@@ -151,7 +151,7 @@ VertexBufferObject::glEnd( ) {
     }
     if(hasNormals) {
 //        if(verbose)
-            fprintf(stderr, "Normal Buffer %d created\n", attribute);
+        fprintf(stderr, "Normal Buffer %d created\n", attribute);
         assert(normalContainer.size() == vertexContainer.size());
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[attribute]);
         glBufferData(GL_ARRAY_BUFFER, normalContainer.size() * sizeof(glm::vec3), normalContainer.data(), GL_STATIC_DRAW);
@@ -266,26 +266,26 @@ VertexBufferObject::Print( FILE *fpout ) {
     for(unsigned int i = 0; i < limit; i++) {
         for(int k = 0; k < 3; k++) {
             fprintf(fpout, " %10.2f", vertexContainer[i][k]);
-            }
-        fprintf(fpout, "\n");
         }
+        fprintf(fpout, "\n");
+    }
     if(hasColors) {
         fprintf(fpout, "Color Object %d vertices\n", colorContainer.size());
         for(unsigned int i = 0; i < limit; i++) {
             for(int k = 0; k < 3; k++) {
                 fprintf(fpout, " %10.2f", colorContainer[i][k]);
-                }
-            fprintf(fpout, "\n");
             }
+            fprintf(fpout, "\n");
+        }
     }
     if(hasNormals) {
         fprintf(fpout, "Normal Object %d vertices\n", normalContainer.size());
         for(unsigned int i = 0; i < limit; i++) {
             for(int k = 0; k < 3; k++) {
                 fprintf(fpout, " %10.2f", normalContainer[i][k]);
-                }
-            fprintf(fpout, "\n");
             }
+            fprintf(fpout, "\n");
+        }
     }
     if(hasTexCoords) {
         fprintf(fpout, "TexCoord Object %d vertices\n", textureContainer.size());
