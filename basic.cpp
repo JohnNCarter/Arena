@@ -143,7 +143,7 @@ int main(void) {
     int showNormals = false;
     int quit_app = 0;
     float quat[4];
-    float camDistance = -7.;
+    float camDistance = 10.;
     float fov = 45.;
     int nbox = 20;
     int startPhysics = false;
@@ -154,6 +154,8 @@ int main(void) {
     float axis[3] = {1., 0., 0.};
     float raxis[3] = {1., .5, -.7};
     SetQuaternionFromAxisAngle(axis, 0., quat);
+    app.width = 1000;
+    app.height = 800;
     app.StartUp("The Arena - lights.");
 
     // Setup Drawing
@@ -176,9 +178,8 @@ int main(void) {
     glm::vec4 ambientTankLight  = glm::vec4(.5, .5, .5, 1.);
     glm::vec4 diffuseTankLight  = glm::vec4(.0, 1., .0, 1.);
 
-    glm::vec3 lightVector   = glm::vec3(glm::normalize(glm::vec3(0., 0., 1.0)));
-    glm::vec3 camVector     = glm::vec3(glm::normalize(glm::vec3(-10., 0., 1.)));
-//    float camDistance       = 10.;
+    glm::vec3 lightVector   = glm::vec3(glm::normalize(glm::vec3(0., 0.1, 1.0)));
+    glm::vec3 camVector     = glm::vec3(glm::normalize(glm::vec3(0., 0., 1.)));
     glm::vec3 camTarget     = glm::vec3(0.f, 0.f, 0.f);
 
     glm::vec3 tankSize = glm::vec3(1., .5, .2);
@@ -186,7 +187,7 @@ int main(void) {
     // Setup UI
 
     TweakBar::AntTweakBar bar;
-    bar.Start("Camera", app.width, app.height);
+    bar.Start("Arena", app.width, app.height);
 
     bar.AddVarRW("Quit", TW_TYPE_BOOL32, &quit_app, "label='Quit' key=q help='Exit the program or press Q' "); // Quit
 
@@ -197,9 +198,9 @@ int main(void) {
     bar.AddVarRW("OV", TW_TYPE_BOOL32, &overhead, "label='Overhead|Tank'  help='Go to overhead view.' "); // manual rotate flag
     bar.AddVarRW("AR", TW_TYPE_BOOL32, &autorotate, "label='Auto Rotate' key=r help='This applies continual rotation.' "); // auto rotate
 //    bar.AddVarRW("NV", TW_TYPE_BOOL32, &showNormals, "label='Show Normal Vectors");
-    bar.AddVarRW("resetP", TW_TYPE_BOOL32, &resetPhysics, "label='Reset Physics Engine");
-    bar.AddVarRW("startP", TW_TYPE_BOOL32, &showNormals, "label='Start Physics Engine");
-    bar.AddVarRW("runningP", TW_TYPE_BOOL32, &showNormals, "label='Run/Stop Physics Engine");
+    bar.AddVarRW("resetP", TW_TYPE_BOOL32, &resetPhysics, "label='Reset Physics Engine'");
+    bar.AddVarRW("startP", TW_TYPE_BOOL32, &showNormals, "label='Start Physics Engine'");
+    bar.AddVarRW("runningP", TW_TYPE_BOOL32, &showNormals, "label='Run/Stop Physics Engine'");
 
     bar.AddVarRW("CX", TW_TYPE_FLOAT, &camDistance, "label='Camera Distance'  help='Move Camera from Target' "); // manual X
     bar.AddVarRW("FOV", TW_TYPE_FLOAT, &fov, "label='Field of View'  help='Control Field of view' "); // manual FOV
@@ -228,20 +229,24 @@ int main(void) {
     bar.AddVarRW("Diff", structVec4, glm::value_ptr(diffuseLight), "Label='Diffuse Light'");
 
     bar.AddVarRW("TankDiff", structVec4, glm::value_ptr(diffuseTankLight), "Label='Diffuse Light for Tank'");
-    bar.AddVarRW("TankAmbient", structVec4, glm::value_ptr(ambientTankLight), "Label='Ambient Light for Tank'");
+//    bar.AddVarRW("TankAmbient", structVec4, glm::value_ptr(ambientTankLight), "Label='Ambient Light for Tank'");
 
-    bar.AddVarRW("RS", TW_TYPE_DIR3F, glm::value_ptr(lightVector), "label='Light Vector'  help='This is the vector to disk lighting.' "); // manual rotate cpntrol
+    bar.AddVarRW("RS", TW_TYPE_DIR3F, glm::value_ptr(lightVector), "label='Light Vector'  help='This is the vector to the light.' "); // manual rotate cpntrol
+    bar.AddVarRW("CV", TW_TYPE_DIR3F, glm::value_ptr(camVector), "label='Camera Vector'  help='This is the vector to the camera.' "); // manual rotate cpntrol
 //    bar.AddVarRW("LV", TW_TYPE_QUAT4F, &quat, "label='Rotate Shape'  help='Rotate this to spin object.' "); // manual rotate cpntrol
 
-    bar.Define("C/CX min = 3. max = 35. step = 0.1");
-    bar.Define("C/FOV min = 1. max = 60. step = 0.5");
-    bar.Define("C/NB min =2 max = 16 step = 1");
+    bar.Define("Arena/CX min = 3. max = 35. step = 0.1");
+    bar.Define("Arena/FOV min = 1. max = 60. step = 0.5");
+    bar.Define("Arena/NB min =2 max = 16 step = 1");
 
     bar.Define(" GLOBAL help='This is a AntTweakBar enabled program. Remember that TwDraw must come after the clear but before the swap buffers.' "); // Message added to the help bar.
 
     glEnable(GL_DEPTH_TEST);
     float aspect = 1./(float(app.height)/float(app.width));
     printf("Aspect Ratio = %f\n", aspect);
+    /*
+     * Render Loop starts here.
+     */
     while(!app.Stop()) {
         int object, shader;
         if(quit_app)
@@ -257,12 +262,15 @@ int main(void) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        camVector = glm::normalize(camVector);
+
         glm::mat4 Projection   = glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
         glm::mat4 TankPosition = glm::translate(glm::mat4(1.), glm::vec3(0.f, 0.f, 0.0f));
         glm::mat4 TankRotation = glm::rotate(glm::mat4(1.),glm::radians(0.f), glm::vec3(0.f, 0.f, 1.f));
         glm::mat4 TankScale    = glm::scale(glm::mat4(1.), tankSize);
 
-        glm::mat4 CamView, MVP;
+        glm::mat4 CamView = glm::lookAt(camTarget + camVector * camDistance, camTarget, glm::vec3(0., 0., 1.));
+        glm::mat4 MVP;
         if(overhead) {
             CamView = glm::lookAt(cameraPosition, glm::vec3(0.), glm::vec3(1.0, 0., 0.));
         } else {

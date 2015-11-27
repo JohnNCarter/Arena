@@ -216,9 +216,9 @@ VertexBufferObject makeWireDiskMesh(float radius) {
     float theta;
     const float Radius = radius;
     Disk.glBegin( GL_TRIANGLE_FAN );
-    Disk.glColor3f(1.0, 1., 0.);
     glm::vec3 p, n;
     Disk.glVertex3f(0., 0., 0.); //Start point
+    Disk.glColor3f(1.0, 0., 0.5); // after vertex.
     Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.); // First Point
     for(theta = lod; theta < PI2; theta += lod) {
         Disk.glVertex3f(Radius * cos(theta), Radius * sin(theta), 0.);
